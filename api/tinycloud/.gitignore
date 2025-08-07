@@ -1,0 +1,10 @@
+.env
+./__pycache__/*
+/api/tinycloud/__pycache__/*
+*.pyc
+*.pyo
+*.pyd
+.Python
+/data/
+.cursorrules
+.helmignore
