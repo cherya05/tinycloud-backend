@@ -4,7 +4,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - DATABASE_URL=postgresql://tinycloud:tiny123!@db:5432/tinycloud
+      - DATABASE_URL=postgresql://${user}:${password}@db:5432/${name}
       - FLASK_APP=manage.py
     depends_on:
       db:
@@ -16,9 +16,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${user}
+      - POSTGRES_PASSWORD=${password}
+      - POSTGRES_DB=${name}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U tinycloud -d tinycloud"]
       interval: 5s
