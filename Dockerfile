@@ -6,8 +6,8 @@ COPY api/tinycloud/requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY api/tinycloud/ .
+COPY . .
 
-EXPOSE 5000
+EXPOSE 8081
 
-CMD ["python", "app.py"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8081", "--debug"]

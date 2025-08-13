@@ -44,3 +44,8 @@ Thumbs.db
 # Database
 *.db
 *.sqlite3 
+
+# Charts
+charts/tinycloud/charts/postgresql/
+charts/tinycloud/charts/postgresql-16.7.24.tgz
+charts/tinycloud/Chart.lock

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, Integer, DateTime
 from datetime import datetime
-from extensions import db
+from ..extensions import db
 
 class UrlMapping(db.Model):
     __tablename__ = "url"

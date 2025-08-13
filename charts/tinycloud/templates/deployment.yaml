@@ -43,10 +43,35 @@ spec:
           env:
             - name: FLASK_ENV
               value: {{ .Values.env.FLASK_ENV | quote }}
+            - name: FLASK_APP
+              value: {{ .Values.env.FLASK_APP | quote }}
             - name: DATABASE_URL
-              value: {{ .Values.env.DATABASE_URL | quote }}
-            - name: SQLALCHEMY_TRACK_MODIFICATIONS
-              value: "false"
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: DATABASE_URL
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: host
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: password
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: name
+            - name: DB_PORT
+              value: "5432"
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

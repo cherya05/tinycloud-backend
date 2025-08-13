@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from models.url_mapping import UrlMapping
-from schemas.url_mapping import UrlSchema
-from extensions import db
+from ..models.url_mapping import UrlMapping
+from ..schemas.url_mapping import UrlSchema
+from ..extensions import db
 import secrets
 import string
 from datetime import datetime

@@ -1,0 +1,29 @@
+database:
+  enabled: true
+  type: postgresql
+  storage:
+    type: "emptyDir"
+    pvc:
+      size: 1Gi
+      storageClass: ""
+      accessModes:
+        - ReadWriteOnce
+
+postgresql:
+  enabled: true
+  auth:
+    existingSecret: "database-secret"
+    secretKeys:
+      adminPasswordKey: "password"
+      userPasswordKey: "password"
+      databaseKey: "name"
+      usernameKey: "user"
+      databaseKey: "name"
+
+      database: ""
+      username: ""
+      password: ""
+      postgresPassword: ""
+
+env:
+  FLASK_ENV: production

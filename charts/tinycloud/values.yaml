@@ -2,8 +2,8 @@ replicaCount: 1
 
 image:
   repository: tinycloud-app
-  pullPolicy: IfNotPresent
-  tag: "latest"
+  pullPolicy: Never
+  tag: "v1"
 
 imagePullSecrets: []
 
@@ -24,7 +24,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 5000
+  port: 8081
 
 ingress:
   enabled: true
@@ -48,14 +48,14 @@ resources:
 livenessProbe:
   httpGet:
     path: /
-    port: 5000
+    port: 8081
   initialDelaySeconds: 30
   periodSeconds: 10
 
 readinessProbe:
   httpGet:
     path: /
-    port: 5000
+    port: 8081
   initialDelaySeconds: 5
   periodSeconds: 5
 
@@ -67,16 +67,11 @@ autoscaling:
 
 database:
   enabled: true
-  type: postgresql
-  host: tinycloud-tinycloud-chart-postgresql
-  port: 5432
-  username: tinycloud
-  password: tiny123!
-  database: tinycloud
 
 env:
   FLASK_ENV: production
-  DATABASE_URL: postgresql://tinycloud:tiny123!@tinycloud-tinycloud-chart-postgresql:5432/tinycloud
+  FLASK_APP: manage.py
+  DATABASE_URL: postgresql://tinycloud:tiny123!@tinycloud-postgresql:5432/tinycloud
 
 nodeSelector: {}
 tolerations: []
