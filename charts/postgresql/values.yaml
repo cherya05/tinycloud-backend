@@ -11,19 +11,16 @@ database:
 
 postgresql:
   enabled: true
-  auth:
-    existingSecret: "database-secret"
-    secretKeys:
-      adminPasswordKey: "password"
-      userPasswordKey: "password"
-      databaseKey: "name"
-      usernameKey: "user"
-      databaseKey: "name"
+  username: ""
+  password: ""
+  database: tinycloud
+  host: tinycloud-postgresql
 
-      database: ""
-      username: ""
-      password: ""
-      postgresPassword: ""
 
 env:
   FLASK_ENV: production
+
+# Storage class
+
+type: gp2
+fsType: ext4

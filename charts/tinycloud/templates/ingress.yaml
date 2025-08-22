@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "tinycloud-chart.fullname" . }}
+  name: {{ include "tinycloud.fullname" . }}
   labels:
-    {{- include "tinycloud-chart.labels" . | nindent 4 }}
+    {{- include "tinycloud.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -35,7 +35,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "tinycloud-chart.fullname" $ }}
+                name: {{ include "tinycloud.fullname" $ }}
                 port:
                   number: {{ $.Values.service.port }}
         {{- end }}

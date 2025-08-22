@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8081
 
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8081", "--debug"]
+CMD ["./run.sh"]

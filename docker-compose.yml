@@ -3,9 +3,12 @@ services:
     build: .
     ports:
       - "8081:8081"
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://${user}:${password}@db:5432/${name}
       - FLASK_APP=manage.py
+      - DATABASE_URL=postgresql://${USERNAME}:${PASSWORD}@${HOSTNAME}:5432/${NAME}
+    command: ./run.sh
     depends_on:
       db:
         condition: service_healthy
@@ -15,12 +18,14 @@ services:
     image: postgres:14.18
     ports:
       - "5432:5432"
+    env_file:
+      - .env
     environment:
-      - POSTGRES_USER=${user}
-      - POSTGRES_PASSWORD=${password}
-      - POSTGRES_DB=${name}
+      - POSTGRES_USER=${USERNAME}
+      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_DB=${NAME}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U tinycloud -d tinycloud"]
+      test: ["CMD-SHELL", "pg_isready -U ${USERNAME} -d ${NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5

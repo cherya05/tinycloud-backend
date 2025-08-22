@@ -25,21 +25,20 @@ spec:
               containerPort: 5432
               protocol: TCP
           env:
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-credentials
-                  key: user-password
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgresql-credentials
+                  name: postgresql-secret
                   key: username
-            - name: POSTGRES_DB
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgresql-credentials
-                  key: database-name
+                  name: postgresql-secret
+                  key: password
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresql.database }}
+            - name: POSTGRES_HOST
+              value: {{ .Values.postgresql.host }}
           volumeMounts:
             - name: postgresql-data
               mountPath: /var/lib/postgresql/data

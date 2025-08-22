@@ -65,13 +65,17 @@ autoscaling:
   maxReplicas: 3
   targetCPUUtilizationPercentage: 50
 
-database:
-  enabled: true
+postgresql:
+  enabled: false
+  username: ""
+  password: ""
+  database: tinycloud
+  host: tinycloud-postgresql
 
 env:
   FLASK_ENV: production
   FLASK_APP: manage.py
-  DATABASE_URL: postgresql://tinycloud:tiny123!@tinycloud-postgresql:5432/tinycloud
+  # DATABASE_URL: postgresql://tinycloud:tiny123!@tinycloud-postgresql:5432/tinycloud
 
 nodeSelector: {}
 tolerations: []

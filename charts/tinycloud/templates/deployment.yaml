@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "tinycloud-chart.fullname" . }}
+  name: {{ include "tinycloud.fullname" . }}
   labels:
-    {{- include "tinycloud-chart.labels" . | nindent 4 }}
+    {{- include "tinycloud.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "tinycloud-chart.selectorLabels" . | nindent 6 }}
+      {{- include "tinycloud.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "tinycloud-chart.labels" . | nindent 8 }}
+        {{- include "tinycloud.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "tinycloud-chart.serviceAccountName" . }}
+      serviceAccountName: {{ include "tinycloud.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -41,37 +41,20 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: FLASK_ENV
-              value: {{ .Values.env.FLASK_ENV | quote }}
-            - name: FLASK_APP
-              value: {{ .Values.env.FLASK_APP | quote }}
-            - name: DATABASE_URL
+            - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: database-secret
-                  key: DATABASE_URL
-            - name: DB_HOST
+                  name: postgresql-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: database-secret
-                  key: host
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: database-secret
-                  key: user
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: database-secret
+                  name: postgresql-secret
                   key: password
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: database-secret
-                  key: name
-            - name: DB_PORT
-              value: "5432"
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresql.database }}
+            - name: POSTGRES_HOST
+              value: {{ .Values.postgresql.host }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
