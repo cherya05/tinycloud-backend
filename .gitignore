@@ -61,6 +61,6 @@ api/tinycloud/data/
 .helmignore
 
 # terraform
-terraform/network/.terraform*
+terraform/network/.terraform/
 terraform/network/.terraform.lock.hcl
 terraform/network/terraform.tfvars
