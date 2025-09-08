@@ -25,14 +25,14 @@ resource "aws_subnet" "private_subnets" {
 output "private_subnets_ids_az_a" {
     value = [
         for subnet in aws_subnet.private_subnets :
-        subnet.id if subnet.availability_zone == var.public_subnets["availability-zone-2a"].az
+        subnet.id if subnet.availability_zone == var.private_subnets["availability-zone-2a"].az
     ]
 }
 
 output "private_subnets_ids_az_b" {
     value = [
         for subnet in aws_subnet.private_subnets :
-        subnet.id if subnet.availability_zone == var.public_subnets["availability-zone-2b"].az
+        subnet.id if subnet.availability_zone == var.private_subnets["availability-zone-2b"].az
     ]
 }
 

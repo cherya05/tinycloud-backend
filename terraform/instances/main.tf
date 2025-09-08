@@ -1,7 +1,7 @@
 terraform {
     backend "s3" {
         bucket = "tinycloud.terraform"
-        key = "terraform/network/.terraform/terraform.tfstate"
+        key = "terraform/instances/.terraform/terraform.tfstate"
         region = "eu-north-1"
     }
 }
