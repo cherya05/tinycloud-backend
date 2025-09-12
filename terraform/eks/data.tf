@@ -7,32 +7,26 @@ data "terraform_remote_state" "aws_vpc" {
     }
 }
 
-data "terraform_remote_state" "aws_subnet" {
-    backend = "s3"
-    config = {
-        bucket = "tinycloud.terraform"
-        key    = "terraform/network/.terraform/terraform.tfstate"
-        region = "eu-north-1"
-    }
-}
-
 data "aws_vpc" "main" {
     id = data.terraform_remote_state.aws_vpc.outputs.vpc_id
 }
 
-data "aws_subnet" "public_subnet_a" {
-    id = data.terraform_remote_state.aws_subnet.outputs.public_subnet_ids[0]
+data "aws_subnets" "private_subnets" {
+    filter {
+        name = "vpc-id"
+        values = [data.terraform_remote_state.aws_vpc.outputs.vpc_id]
+    }
 }
 
-data "aws_subnet" "private_subnet_a" {
-    id = data.terraform_remote_state.aws_subnet.outputs.private_subnets_ids_az_a[0]
+data "aws_subnet" "private_subnets" {
+    for_each = toset(data.aws_subnets.private_subnets.ids)
+    id = each.value
 }
 
-data "aws_subnet" "private_subnet_b" {
-    id = data.terraform_remote_state.aws_subnet.outputs.private_subnets_ids_az_b[0]
+output "subnet_cidr_blocks" {
+  value = [for subnet in data.aws_subnet.private_subnets : subnet.cidr_block] 
 }
 
-#
 
 data "aws_secretsmanager_secret" "secret_key_name" {
   name = "key_name"

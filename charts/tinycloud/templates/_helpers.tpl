@@ -51,14 +51,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "tinycloud.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "tinycloud.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "tinycloud.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }} 

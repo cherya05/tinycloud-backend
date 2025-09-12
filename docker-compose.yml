@@ -7,7 +7,7 @@ services:
       - .env
     environment:
       - FLASK_APP=manage.py
-      - DATABASE_URL=postgresql://${USERNAME}:${PASSWORD}@${HOSTNAME}:5432/${NAME}
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}
     command: ./run.sh
     depends_on:
       db:
@@ -21,11 +21,11 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_USER=${USERNAME}
-      - POSTGRES_PASSWORD=${PASSWORD}
-      - POSTGRES_DB=${NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${USERNAME} -d ${NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5

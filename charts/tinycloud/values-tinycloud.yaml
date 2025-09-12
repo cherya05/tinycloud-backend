@@ -1,8 +1,8 @@
-replicaCount: null
+replicaCount: 1
 
 image:
   repository: tinycloud-app
-  pullPolicy: IfNotPresent
+  pullPolicy: Never
   tag: "v1"
 
 imagePullSecrets: []
@@ -18,34 +18,34 @@ podSecurityContext: {}
 securityContext: {}
 
 service:
-  type: ""
+  type: ClusterIP
   port: 8081
 
 ingress:
-  enabled: null
+  enabled: true
   className: ""
   annotations: {}
   hosts:
-    - host: ""
+    - host: tinycloud.app
       paths:
-        - path: []
-          pathType: ""
+        - path: /
+          pathType: Prefix
   tls: []
 
 resources:
   limits:
-    cpu: null
-    memory: null
+    cpu: 500m
+    memory: 512Mi
   requests:
-    cpu: null
-    memory: null
+    cpu: 100m
+    memory: 128Mi
 
 livenessProbe:
   httpGet:
     path: /
     port: 8081
-  initialDelaySeconds: null
-  periodSeconds: null
+  initialDelaySeconds: 30
+  periodSeconds: 10
 
 readinessProbe:
   httpGet:
@@ -54,14 +54,14 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 5
 
-secretName: ""
+secretName: "postgresql-secret"
 
 postgresql:
   username: ""
   password: ""
-  database: ""
-  host: ""
+  database: tinycloud
+  host: postgresql
 
 env:
-  FLASK_ENV: ""
-  FLASK_APP: ""
+  FLASK_ENV: production
+  FLASK_APP: manage.py

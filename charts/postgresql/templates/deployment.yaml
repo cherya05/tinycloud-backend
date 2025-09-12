@@ -1,21 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "postgresql.fullname" . }}-postgresql
-  labels:
-    {{- include "postgresql.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database
+  name: {{ include "postgresql.fullname" . }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       {{- include "postgresql.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: database
   template:
     metadata:
       labels:
         {{- include "postgresql.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: database
     spec:
       containers:
         - name: postgresql
@@ -25,33 +20,39 @@ spec:
               containerPort: 5432
               protocol: TCP
           env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-secret
-                  key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgresql-secret
+                  name: {{ .Values.secretName }}
                   key: password
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: username
             - name: POSTGRES_DB
-              value: {{ .Values.postgresql.database }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: database
             - name: POSTGRES_HOST
-              value: {{ .Values.postgresql.host }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: host
           volumeMounts:
             - name: postgresql-data
               mountPath: /var/lib/postgresql/data
           resources:
             limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
       volumes:
         - name: postgresql-data
-          {{- if eq .Values.database.storage.type "pvc" }}
+          {{- if eq .Values.postgresql.storage.type "pvc" }}
           persistentVolumeClaim:
             claimName: {{ include "postgresql.fullname" . }}-postgresql-pvc
           {{- else }}

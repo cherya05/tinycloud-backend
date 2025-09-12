@@ -9,10 +9,10 @@ from .routes.url_mapping import url_bp
 def create_app():
     app = Flask(__name__)
     
-    user = os.getenv('POSTGRES_USER')
-    password = os.getenv('POSTGRES_PASSWORD')
-    hostname = os.getenv('POSTGRES_HOST')
-    name = os.getenv('POSTGRES_DB')
+    user = os.getenv('DB_USER')
+    password = os.getenv('DB_PASSWORD')
+    hostname = os.getenv('DB_HOST')
+    name = os.getenv('DB_NAME')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{user}:{password}@{hostname}:5432/{name}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -21,7 +21,7 @@ def create_app():
     
     app.register_blueprint(url_bp)
     
-    migrate = Migrate(app, db)
+    migrate = Migrate(app, db, directory='api/tinycloud/migrations')
     
     api = Api(app)
 

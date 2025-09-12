@@ -1,0 +1,38 @@
+postgresql:
+  name: "postgresql"
+  username: ""
+  password: ""
+  database: ""
+  host: ""
+  port: ""
+  protocol: "TCP"
+  storage:
+    type: "emptyDir"
+    pvc:
+      size: 1Gi
+      storageClass: ""
+      accessModes:
+        - ReadWriteOnce
+
+image:
+  repository: tinycloud-app
+  pullPolicy: IfNotPresent
+  tag: "v1"
+
+resources:
+  limits:
+      cpu: 500m
+      memory: 512Mi
+  requests:
+      cpu: 100m
+      memory: 256Mi
+
+secretName: "postgresql-secret"
+
+env:
+  FLASK_ENV: production
+
+# Storage class
+
+type: gp2
+fsType: ext4

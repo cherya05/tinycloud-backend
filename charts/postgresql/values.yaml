@@ -1,26 +1,31 @@
-database:
-  enabled: true
-  type: postgresql
-  storage:
-    type: "emptyDir"
-    pvc:
-      size: 1Gi
-      storageClass: ""
-      accessModes:
-        - ReadWriteOnce
-
 postgresql:
-  enabled: true
+  name: ""
   username: ""
   password: ""
-  database: tinycloud
-  host: tinycloud-postgresql
+  database: ""
+  host: ""
+  port: ""
+  protocol: ""
+  storage:
+    type: ""
+    pvc:
+      size: ""
+      storageClass: ""
+      accessModes: []
 
+image:
+  repository: ""
+  pullPolicy: ""
+  tag: ""
+
+resources: {}
+
+secretName: ""
 
 env:
-  FLASK_ENV: production
+  FLASK_ENV: ""
 
 # Storage class
 
-type: gp2
-fsType: ext4
+type: ""
+fsType: ""

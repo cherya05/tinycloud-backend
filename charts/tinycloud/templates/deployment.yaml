@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "tinycloud.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "tinycloud.selectorLabels" . | nindent 6 }}
@@ -27,7 +25,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "tinycloud.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -41,16 +38,27 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
+            {{- if .Values.secretName }}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgresql-secret
+                  name: {{ .Values.secretName }}
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgresql-secret
+                  name: {{ .Values.secretName }}
                   key: password
+            {{- else }}
+            {{- if .Values.postgresql.username }}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresql.username | quote }}
+            {{- end }}
+            {{- if .Values.postgresql.password }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgresql.password | quote }}
+            {{- end }}
+            {{- end }}
             - name: POSTGRES_DB
               value: {{ .Values.postgresql.database }}
             - name: POSTGRES_HOST
