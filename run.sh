@@ -1,8 +1,22 @@
 #!/bin/bash
 
-set -a
-source .env
-set +a
+# Source .env file but don't override existing environment variables
+if [ -f .env ]; then
+    # Read .env file and only set variables that aren't already set
+    while IFS= read -r line; do
+        # Skip comments and empty lines
+        [[ $line =~ ^[[:space:]]*# ]] && continue
+        [[ -z "${line// }" ]] && continue
+        
+        # Extract variable name
+        var_name=$(echo "$line" | cut -d'=' -f1)
+        
+        # Only set if not already defined
+        if [ -z "${!var_name}" ]; then
+            export "$line"
+        fi
+    done < .env
+fi
 
 export FLASK_APP=manage.py
 

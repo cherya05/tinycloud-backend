@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: tinycloud-app
   pullPolicy: Never
-  tag: "v1"
+  tag: "dev"
 
 imagePullSecrets: []
 
@@ -54,14 +54,14 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 5
 
-secretName: "postgresql-secret"
+secretName: "postgresql-dev-secret"
 
 postgresql:
   username: ""
   password: ""
   database: tinycloud
-  host: postgresql
+  host: tinycloud-db-dev-postgresql
 
 env:
-  FLASK_ENV: production
+  FLASK_ENV: dev
   FLASK_APP: manage.py

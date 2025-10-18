@@ -8,10 +8,11 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   annotations:
-    "helm.sh/hook": pre-install, pre-upgrade
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook": post-install, post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-failed
     "helm.sh/hook-weight": "1"
 spec:
+  ttlSecondsAfterFinished: 600
   template:
     metadata:
       labels:
@@ -22,8 +23,8 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-init-db
-          image: tinycloud-app:v1
-          imagePullPolicy: IfNotPresent
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: POSTGRES_USER
               valueFrom:
@@ -41,13 +42,13 @@ spec:
                   name: {{ .Values.secretName }}
                   key: database
             - name: POSTGRES_HOST
-              value: postgresql
+              value: {{ include "postgresql.fullname" . }}
           command:
             - /bin/sh
             - -c
             - |
               echo "Waiting for PostgreSQL to be ready..."
-              while ! timeout 1 bash -c 'cat < /dev/null > /dev/tcp/postgresql/5432'; do
+              while ! timeout 1 bash -c 'cat < /dev/null > /dev/tcp/'"${POSTGRES_HOST}"'/5432'; do
                 sleep 2
               done
               echo "PostgreSQL is ready"

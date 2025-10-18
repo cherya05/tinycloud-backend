@@ -1,0 +1,67 @@
+replicaCount: 1
+
+image:
+  repository: tinycloud-app
+  pullPolicy: Never
+  tag: "prod"
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 8081
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+  hosts:
+    - host: tinycloud.app
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8081
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8081
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+secretName: "postgresql-prod-secret"
+
+postgresql:
+  username: ""
+  password: ""
+  database: tinycloud
+  host: tinycloud-db-prod-postgresql
+
+env:
+  FLASK_ENV: production
+  FLASK_APP: manage.py
