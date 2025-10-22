@@ -15,10 +15,10 @@ postgresql:
         - ReadWriteOnce
 
 image:
-  repository: tinycloud-app
+  repository: postgres
   pullPolicy: IfNotPresent
-  tag: "staging"
-
+  tag: "15"
+  
 resources:
   limits:
       cpu: 500m

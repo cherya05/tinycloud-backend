@@ -13,11 +13,6 @@ postgresql:
       storageClass: ""
       accessModes: []
 
-image:
-  repository: ""
-  pullPolicy: ""
-  tag: ""
-
 resources: {}
 
 secretName: ""

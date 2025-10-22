@@ -15,9 +15,9 @@ postgresql:
         - ReadWriteOnce
 
 image:
-  repository: tinycloud-app
+  repository: postgres
   pullPolicy: IfNotPresent
-  tag: "prod"
+  tag: "15"
 
 resources:
   limits:

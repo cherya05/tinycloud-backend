@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: tinycloud-app
   pullPolicy: Never
-  tag: "dev"
+  tag: "latest"
 
 imagePullSecrets: []
 

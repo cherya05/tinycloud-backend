@@ -4,7 +4,7 @@ postgresql:
   password: ""
   database: ""
   host: ""
-  port: ""
+  port: "5432"
   protocol: "TCP"
   storage:
     type: "emptyDir"
@@ -15,9 +15,9 @@ postgresql:
         - ReadWriteOnce
 
 image:
-  repository: tinycloud-app
+  repository: postgres
+  tag: "15"
   pullPolicy: IfNotPresent
-  tag: "dev"
 
 resources:
   limits:
