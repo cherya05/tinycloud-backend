@@ -45,4 +45,4 @@ flask db upgrade
 
 # Start the Flask application
 echo "Starting Flask application..."
-gunicorn --bind 0.0.0.0:8081 --workers 1 manage:app
+gunicorn --bind 0.0.0.0:8080 --workers 1 manage:app

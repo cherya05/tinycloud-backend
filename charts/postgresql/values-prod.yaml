@@ -22,10 +22,10 @@ image:
 resources:
   limits:
       cpu: 500m
-      memory: 512Mi
+      memory: 384Mi
   requests:
       cpu: 100m
-      memory: 256Mi
+      memory: 128Mi
 
 secretName: "postgresql-prod-secret"
 
@@ -36,3 +36,12 @@ env:
 
 type: gp2
 fsType: ext4
+
+tolerations:
+  - key: "environment"
+    operator: "Equal"
+    value: "prod"
+    effect: "NoSchedule"
+
+nodeSelector:
+  environment: "prod"

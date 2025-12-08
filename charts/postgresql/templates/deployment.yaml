@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: postgresql
-          image: postgres:15
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: postgresql
               containerPort: 5432
@@ -50,6 +51,14 @@ spec:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
               memory: {{ .Values.resources.requests.memory }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - name: postgresql-data
           {{- if eq .Values.postgresql.storage.type "pvc" }}

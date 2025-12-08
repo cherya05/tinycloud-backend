@@ -4,7 +4,7 @@ postgresql:
   password: ""
   database: ""
   host: ""
-  port: "5432"
+  port: ""
   protocol: "TCP"
   storage:
     type: "emptyDir"
@@ -16,8 +16,8 @@ postgresql:
 
 image:
   repository: postgres
-  tag: "15"
   pullPolicy: IfNotPresent
+  tag: "15"
 
 resources:
   limits:
@@ -36,3 +36,12 @@ env:
 
 type: gp2
 fsType: ext4
+
+tolerations:
+  - key: "environment"
+    operator: "Equal"
+    value: "dev"
+    effect: "NoSchedule"
+
+nodeSelector:
+  environment: "dev"

@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: tinycloud-app
-  pullPolicy: Never
+  repository: 242902229138.dkr.ecr.eu-north-1.amazonaws.com/tinycloud-app
+  pullPolicy: IfNotPresent
   tag: "latest"
 
 imagePullSecrets: []
@@ -19,14 +19,15 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 8081
+  port: 8080
 
 ingress:
   enabled: true
-  className: ""
-  annotations: {}
+  className: "nginx"
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: dev.hatstore-danil.info
   hosts:
-    - host: tinycloud.app
+    - host: dev.hatstore-danil.info
       paths:
         - path: /
           pathType: Prefix
@@ -40,17 +41,37 @@ resources:
     cpu: 100m
     memory: 128Mi
 
+elasticsearch:
+  enabled: true
+  replicas: 1
+  minimumMasterNodes: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  volumeClaimTemplate:
+    accessModes: ["ReadWriteOnce"]
+    resources:
+      requests:
+        storage: 10Gi
+        
+  podDisruptionBudget:
+    enabled: false
+
 livenessProbe:
   httpGet:
-    path: /
-    port: 8081
+    path: /url-mapping/
+    port: 8080
   initialDelaySeconds: 30
   periodSeconds: 10
 
 readinessProbe:
   httpGet:
-    path: /
-    port: 8081
+    path: /url-mapping/
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 5
 
@@ -60,8 +81,19 @@ postgresql:
   username: ""
   password: ""
   database: tinycloud
-  host: tinycloud-db-dev-postgresql
+  host: postgresql-db-dev
 
 env:
   FLASK_ENV: dev
   FLASK_APP: manage.py
+  ELASTICSEARCH_HOST: "elasticsearch-master"
+  ELASTICSEARCH_PORT: "9200"
+
+tolerations:
+  - key: "environment"
+    operator: "Equal"
+    value: "dev"
+    effect: "NoSchedule"
+
+nodeSelector:
+  environment: "dev"

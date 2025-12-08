@@ -27,6 +27,7 @@ wheels/
 venv/
 env/
 ENV/
+.venv/
 
 # IDE
 .vscode/
@@ -60,11 +61,34 @@ api/tinycloud/data/
 .cursorrules
 .helmignore
 
-# terraform
+# Terraform
 **/.terraform/*
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+terraform.tfstate
 terraform/network/.terraform.lock.hcl
 terraform/instances/.terraform.lock.hcl
 terraform/instances/.terraform/providers/registry.terraform.io/hashicorp/aws/6.10.0/darwin_amd64/LICENSE.txt
 terraform/instances/.terraform/providers/registry.terraform.io/hashicorp/aws/6.10.0/darwin_amd64/terraform-provider-aws_v6.10.0_x5
 
 .dockerignore
+
+elasticsearch-*/
+elasticsearch-*.tar.gz
+**/filebeat-*.tar.gz
+
+postgresql.conf
+postgresql.auto.conf
+postmaster.opts
+**/pg_*/
+
+*.tgz
+charts/**/*.tgz
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup

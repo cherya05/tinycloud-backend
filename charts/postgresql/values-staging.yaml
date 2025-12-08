@@ -36,3 +36,12 @@ env:
 
 type: gp2
 fsType: ext4
+
+tolerations:
+  - key: "environment"
+    operator: "Equal"
+    value: "staging"
+    effect: "NoSchedule"
+
+nodeSelector:
+  environment: "staging"

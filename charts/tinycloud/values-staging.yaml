@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: tinycloud-app
+  repository: 242902229138.dkr.ecr.eu-north-1.amazonaws.com/tinycloud-app
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -19,14 +19,15 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 8081
+  port: 8080
 
 ingress:
   enabled: true
-  className: ""
-  annotations: {}
+  className: "nginx"
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: staging.hatstore-danil.info
   hosts:
-    - host: tinycloud.app
+    - host: staging.hatstore-danil.info
       paths:
         - path: /
           pathType: Prefix
@@ -34,23 +35,23 @@ ingress:
 
 resources:
   limits:
-    cpu: 500m
-    memory: 512Mi
+    cpu: 1000m
+    memory: 1Gi
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 250m
+    memory: 256Mi
 
 livenessProbe:
   httpGet:
-    path: /
-    port: 8081
+    path: /url-mapping/
+    port: 8080
   initialDelaySeconds: 30
   periodSeconds: 10
 
 readinessProbe:
   httpGet:
-    path: /
-    port: 8081
+    path: /url-mapping/
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 5
 
@@ -60,8 +61,19 @@ postgresql:
   username: ""
   password: ""
   database: tinycloud
-  host: tinycloud-db-staging-postgresql
+  host: postgresql-db-staging
 
 env:
   FLASK_ENV: staging
   FLASK_APP: manage.py
+  ELASTICSEARCH_HOST: "elasticsearch-master"
+  ELASTICSEARCH_PORT: "9200"
+
+tolerations:
+  - key: "environment"
+    operator: "Equal"
+    value: "staging"
+    effect: "NoSchedule"
+
+nodeSelector:
+  environment: "staging"
