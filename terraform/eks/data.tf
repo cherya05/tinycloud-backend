@@ -11,35 +11,48 @@ data "aws_vpc" "main" {
     id = data.terraform_remote_state.aws_vpc.outputs.vpc_id
 }
 
+data "aws_subnets" "public_subnets" {
+    filter {
+        name = "vpc-id"
+        values = [data.terraform_remote_state.aws_vpc.outputs.vpc_id]
+    }
+
+    filter {
+        name   = "tag:kubernetes.io/role/elb"
+        values = ["1"]
+    }
+}
+
 data "aws_subnets" "private_subnets" {
     filter {
         name = "vpc-id"
         values = [data.terraform_remote_state.aws_vpc.outputs.vpc_id]
     }
+
+    filter {
+        name   = "tag:kubernetes.io/role/internal-elb"
+        values = ["1"]
+    }
 }
 
-data "aws_subnet" "private_subnets" {
-    for_each = toset(data.aws_subnets.private_subnets.ids)
-    id = each.value
+data "tls_certificate" "eks" {
+    url = aws_eks_cluster.main.identity[0].oidc[0].issuer
 }
 
-output "subnet_cidr_blocks" {
-  value = [for subnet in data.aws_subnet.private_subnets : subnet.cidr_block] 
+data "aws_eks_cluster_auth" "main" {
+    name = aws_eks_cluster.main.name
 }
 
+data "aws_iam_policy_document" "external_dns" {
+    statement {
+        effect = "Allow"
+        actions = ["route53:ChangeResourceRecordSets"]
+        resources = ["arn:aws:route53:::hostedzone/*"]
+    }
 
-data "aws_secretsmanager_secret" "secret_key_name" {
-  name = "key_name"
-}
-
-data "aws_secretsmanager_secret_version" "key_name" {
-  secret_id = data.aws_secretsmanager_secret.secret_key_name.id
-}
-
-data "aws_secretsmanager_secret" "secret_ami_version" {
-  name = "ami_version"
-}
-
-data "aws_secretsmanager_secret_version" "ami_instance" {
-  secret_id = data.aws_secretsmanager_secret.secret_ami_version.id
+    statement {
+        effect = "Allow"
+        actions = ["route53:ListHostedZones", "route53:ListResourceRecordSets", "route53:ListTagsForResource"]
+        resources = ["*"]
+    }
 }
