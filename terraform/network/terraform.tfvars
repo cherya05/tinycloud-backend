@@ -8,6 +8,10 @@ public_subnets = {
     az   = "eu-north-1a"
     cidr = "10.0.11.0/24"
   }
+  "availability-zone-1b" = {
+    az   = "eu-north-1b"
+    cidr = "10.0.21.0/24"
+  }
 }
 private_subnets = {
   "availability-zone-2a" = {
@@ -18,11 +22,11 @@ private_subnets = {
     az   = "eu-north-1a"
     cidr = "10.0.13.0/24"
   }
-  "availability-zone-1b" = {
+  "availability-zone-2b" = {
     az   = "eu-north-1b"
     cidr = "10.0.22.0/24"
   }
-  "availability-zone-2b" = {
+  "availability-zone-3b" = {
     az   = "eu-north-1b"
     cidr = "10.0.23.0/24"
   }
