@@ -1,0 +1,18 @@
+name: kibana-tinycloud
+spec:
+  version: 8.12.0
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch-tinycloud
+    namespace: elasticsearch
+  podTemplate:
+    spec:
+      containers:
+      - name: kibana
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "100Mi"
+          limits:
+            cpu: 1000m
+            memory: 2Gi

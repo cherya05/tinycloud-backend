@@ -37,6 +37,12 @@ env:
 type: gp2
 fsType: ext4
 
+persistence:
+  enabled: true
+  storageClassName: default
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  
 tolerations:
   - key: "environment"
     operator: "Equal"

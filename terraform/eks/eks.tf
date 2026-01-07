@@ -27,7 +27,7 @@ resource "aws_eks_node_group" "dev" {
         min_size     = 1
     }
 
-    instance_types = ["t3.medium"]
+    instance_types = ["t3.large"]
 
     labels = {
         environment = "dev"
@@ -52,7 +52,7 @@ resource "aws_eks_node_group" "staging" {
         min_size     = 1
     }
 
-    instance_types = ["t3.medium"]
+    instance_types = ["t3.large"]
 
     labels = {
         environment = "staging"
@@ -77,7 +77,7 @@ resource "aws_eks_node_group" "prod" {
         min_size     = 1
     }
 
-    instance_types = ["t3.medium"]
+    instance_types = ["t3.large"]
 
     labels = {
         environment = "prod"
@@ -91,26 +91,43 @@ resource "aws_eks_node_group" "prod" {
 }
 
 resource "kubernetes_namespace_v1" "external_dns" {
-    for_each = toset(local.environments)
 
     metadata {
-        name = local.env_config[each.key].namespace
+        name = var.external_dns
     }
 }
 
 resource "kubernetes_service_account_v1" "external_dns" {
-    for_each = toset(local.environments)
 
     metadata {
-        name = local.env_config[each.key].serviceaccount
-        namespace = local.env_config[each.key].namespace
+        name = var.external_dns
+        namespace = var.external_dns
         labels = {
             "app.kubernetes.io/managed-by" = "Helm"
         }
         annotations = {
-            "eks.amazonaws.com/role-arn" = aws_iam_role.external_dns_role[each.key].arn
-            "meta.helm.sh/release-name" = "external-dns-${each.key}"
-            "meta.helm.sh/release-namespace" = local.env_config[each.key].namespace
+            "eks.amazonaws.com/role-arn" = aws_iam_role.external_dns_role.arn
+            "meta.helm.sh/release-name" = var.external_dns
+            "meta.helm.sh/release-namespace" = var.external_dns
         }
     }
 }
+
+# resource "aws_eks_addon" "ebs_csi_driver" {
+#     cluster_name = aws_eks_cluster.main.name
+#     addon_name = var.addon_name
+#     addon_version = var.addon_version
+#     service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+
+    
+#     resolve_conflicts_on_create = "OVERWRITE"
+#     resolve_conflicts_on_update = "OVERWRITE"
+
+#     depends_on = [
+#         aws_iam_role_policy_attachment.ebs_csi_driver_policy
+#     ]
+
+#     tags = {
+#         Name = "ebs-csi-driver-${var.name}"
+#     }
+# }
