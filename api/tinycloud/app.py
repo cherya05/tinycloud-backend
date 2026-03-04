@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from .extensions import db
 from .routes.url_mapping import url_bp
 from .services.elasticsearch_service import ElasticsearchService
+from .services.metrics import init_metrics, metrics_bp
 
 def create_app():
     app = Flask(__name__)
@@ -22,8 +23,9 @@ def create_app():
     app.config['ELASTICSEARCH_SERVICE'] = es_service
 
     db.init_app(app)
-    
     app.register_blueprint(url_bp)
+    app.register_blueprint(metrics_bp)
+    init_metrics(app)
     
     migrate = Migrate(app, db, directory='api/tinycloud/migrations')
     
@@ -33,7 +35,6 @@ def create_app():
 
 app = create_app()
 base = DeclarativeBase()
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)

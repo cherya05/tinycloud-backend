@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: 242902229138.dkr.ecr.eu-north-1.amazonaws.com/tinycloud-app
+  repository: cheryyaaaaaaa/tinycloud-app
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -69,11 +69,11 @@ env:
   ELASTICSEARCH_HOST: "elasticsearch-master"
   ELASTICSEARCH_PORT: "9200"
 
-tolerations:
-  - key: "environment"
-    operator: "Equal"
-    value: "prod"
-    effect: "NoSchedule"
+# tolerations:
+#   - key: "environment"
+#     operator: "Equal"
+#     value: "prod"
+#     effect: "NoSchedule"
 
 storageclass:
   type: "gp2"
@@ -88,5 +88,5 @@ persistence:
   accessMode: ReadWriteOnce
   size: 10Gi
   
-nodeSelector:
-  environment: "prod"
+# nodeSelector:
+#   environment: "prod"

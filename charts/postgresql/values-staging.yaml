@@ -44,11 +44,11 @@ persistence:
   accessMode: ReadWriteOnce
   size: 10Gi
 
-tolerations:
-  - key: "environment"
-    operator: "Equal"
-    value: "staging"
-    effect: "NoSchedule"
+# tolerations:
+#   - key: "environment"
+#     operator: "Equal"
+#     value: "staging"
+#     effect: "NoSchedule"
 
-nodeSelector:
-  environment: "staging"
+# nodeSelector:
+#   environment: "staging"

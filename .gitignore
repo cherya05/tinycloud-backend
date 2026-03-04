@@ -3,10 +3,13 @@
 
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
+api/tinycloud/__pycache__/
+api/tinycloud/data/
+*.pyc
+*.pyo
+*.pyd
 .Python
+
 build/
 develop-eggs/
 dist/
@@ -50,14 +53,8 @@ Thumbs.db
 charts/tinycloud/charts/postgresql/
 charts/tinycloud/charts/postgresql-16.7.24.tgz
 charts/tinycloud/Chart.lock
+charts/tinycloud/*.json
 
-__pycache__/
-api/tinycloud/__pycache__/
-api/tinycloud/data/
-*.pyc
-*.pyo
-*.pyd
-.Python
 .cursorrules
 .helmignore
 
@@ -68,16 +65,13 @@ api/tinycloud/data/
 *.tfstate.*
 *.tfstate.backup
 terraform.tfstate
+terraform/
 terraform/network/.terraform.lock.hcl
-terraform/instances/.terraform.lock.hcl
-terraform/instances/.terraform/providers/registry.terraform.io/hashicorp/aws/6.10.0/darwin_amd64/LICENSE.txt
-terraform/instances/.terraform/providers/registry.terraform.io/hashicorp/aws/6.10.0/darwin_amd64/terraform-provider-aws_v6.10.0_x5
+terraform/eks/.terraform.lock.hcl
+terraform/eks/.terraform/providers/registry.terraform.io/hashicorp/aws/6.10.0/darwin_amd64/LICENSE.txt
+terraform/eks/.terraform/providers/registry.terraform.io/hashicorp/aws/6.10.0/darwin_amd64/terraform-provider-aws_v6.10.0_x5
 
 .dockerignore
-
-elasticsearch-*/
-elasticsearch-*.tar.gz
-**/filebeat-*.tar.gz
 
 postgresql.conf
 postgresql.auto.conf
