@@ -25,21 +25,45 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: staging.hatstore-danil.info
+    external-dns.alpha.kubernetes.io/hostname: api.dev.hatstore-danil.info
   hosts:
-    - host: staging.hatstore-danil.info
+    - host: api.dev.hatstore-danil.info
       paths:
         - path: /
           pathType: Prefix
   tls: []
 
+frontend:
+  serviceName: tinycloud-frontend
+  servicePort: 80
+
 resources:
   limits:
-    cpu: 1000m
-    memory: 1Gi
+    cpu: 500m
+    memory: 512Mi
   requests:
-    cpu: 250m
-    memory: 256Mi
+    cpu: 100m
+    memory: 128Mi
+
+elasticsearch:
+  enabled: false
+  replicas: 1
+  minimumMasterNodes: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  volumeClaimTemplate:
+    accessModes: ["ReadWriteOnce"]
+    resources:
+      requests:
+        storage: 10Gi
+        
+  podDisruptionBudget:
+    enabled: false
 
 livenessProbe:
   httpGet:
@@ -55,16 +79,21 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 5
 
-secretName: "postgresql-staging-secret"
+secretName: "postgresql-dev-secret"
 
 postgresql:
-  username: ""
-  password: ""
-  database: tinycloud
-  host: postgresql-db-staging
+  enabled: true
+  auth:
+    username: "tinycloud-dev-user"
+    database: "tinycloud"
+    existingSecret: "postgresql-dev-secret"
+    secretKeys:
+      adminPasswordKey: "postgres-password"
+      userPasswordKey: "password"
+
 
 env:
-  FLASK_ENV: staging
+  FLASK_ENV: dev
   FLASK_APP: manage.py
   ELASTICSEARCH_HOST: "elasticsearch-master"
   ELASTICSEARCH_PORT: "9200"
@@ -72,7 +101,7 @@ env:
 # tolerations:
 #   - key: "environment"
 #     operator: "Equal"
-#     value: "staging"
+#     value: "dev"
 #     effect: "NoSchedule"
 
 storageclass:
@@ -90,4 +119,4 @@ persistence:
   size: 10Gi
 
 # nodeSelector:
-#   environment: "staging"
+#   environment: "dev"

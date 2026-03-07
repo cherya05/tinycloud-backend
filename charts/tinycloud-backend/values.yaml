@@ -57,11 +57,15 @@ readinessProbe:
 secretName: ""
 
 postgresql:
-  username: ""
-  password: ""
-  database: ""
-  host: ""
-
+  enabled: true
+  auth:
+    username: ""
+    database: ""
+    existingSecret: ""
+    secretKeys:
+      adminPasswordKey: ""
+      userPasswordKey: ""
+ 
 env:
   FLASK_ENV: ""
   FLASK_APP: ""

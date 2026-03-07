@@ -25,21 +25,28 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: prod.hatstore-danil.info
+    external-dns.alpha.kubernetes.io/hostname: api.prod.hatstore-danil.info
   hosts:
-    - host: prod.hatstore-danil.info
+    - host: api.prod.hatstore-danil.info
       paths:
         - path: /
           pathType: Prefix
   tls: []
 
+frontend:
+  serviceName: tinycloud-frontend
+  servicePort: 80
+  
 resources:
   limits:
-    cpu: 1000m
-    memory: 1Gi
+    cpu: 500m
+    memory: 512Mi
   requests:
-    cpu: 250m
-    memory: 256Mi
+    cpu: 100m
+    memory: 128Mi
+
+elasticsearch:
+  enabled: false
 
 livenessProbe:
   httpGet:
@@ -58,10 +65,14 @@ readinessProbe:
 secretName: "postgresql-prod-secret"
 
 postgresql:
-  username: ""
-  password: ""
-  database: tinycloud
-  host: postgresql-db-prod
+  enabled: true
+  auth:
+    username: "tinycloud-prod-user"
+    database: "tinycloud"
+    existingSecret: "postgresql-prod-secret"
+    secretKeys:
+      adminPasswordKey: "postgres-password"
+      userPasswordKey: "password"
 
 env:
   FLASK_ENV: production

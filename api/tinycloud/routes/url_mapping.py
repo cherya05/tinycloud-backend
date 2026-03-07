@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask import redirect
 from ..models.url_mapping import UrlMapping
 from ..schemas.url_mapping import UrlSchema
 from ..extensions import db
@@ -15,7 +16,7 @@ def get_urls():
     schema = UrlSchema(many=True)
     return jsonify(schema.dump(url_mappings))
 
-@url_bp.route('/<id>', methods=['GET'])
+@url_bp.route('/id/<id>', methods=['GET'])
 def get_url(id):
     url_mapping = UrlMapping.query.filter_by(id=id).first()
     if url_mapping:
@@ -62,5 +63,13 @@ def delete_url(id):
         db.session.delete(url_mapping)
         db.session.commit()
         return jsonify({'message': 'URL deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'URL not found'}), 404
+
+@url_bp.route('/<short_url>', methods=['GET'])
+def redirect_url(short_url):
+    url_mapping = UrlMapping.query.filter_by(short_url=short_url).first()
+    if url_mapping:
+        return redirect(url_mapping.long_url)
     else:
         return jsonify({'error': 'URL not found'}), 404

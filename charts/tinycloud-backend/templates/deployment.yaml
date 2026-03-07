@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "tinycloud.fullname" . }}
+  name: {{ include "tinycloud-backend.fullname" . }}
   labels:
-    {{- include "tinycloud.labels" . | nindent 4 }}
+    {{- include "tinycloud-backend.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "tinycloud.selectorLabels" . | nindent 6 }}
+      {{- include "tinycloud-backend.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -16,7 +16,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "tinycloud.labels" . | nindent 8 }}
+        {{- include "tinycloud-backend.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -59,28 +59,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secretName }}
                   key: password
-            {{- else }}
-            {{- if .Values.postgresql.username }}
-            - name: POSTGRES_USER
-              value: {{ .Values.postgresql.username | quote }}
-            - name: DB_USER
-              value: {{ .Values.postgresql.username | quote }}
-            {{- end }}
-            {{- if .Values.postgresql.password }}
-            - name: POSTGRES_PASSWORD
-              value: {{ .Values.postgresql.password | quote }}
-            - name: DB_PASSWORD
-              value: {{ .Values.postgresql.password | quote }}
-            {{- end }}
-            {{- end }}
-            - name: POSTGRES_DB
-              value: {{ .Values.postgresql.database }}
-            - name: POSTGRES_HOST
-              value: {{ .Values.postgresql.host }}
+              {{- end }}
             - name: DB_NAME
-              value: {{ .Values.postgresql.database }}
+              value: {{ .Values.postgresql.auth.database | quote }}
             - name: DB_HOST
-              value: {{ .Values.postgresql.host }}
+              value: {{ .Release.Name }}-postgresql
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

@@ -7,12 +7,10 @@ services:
       - .env
     environment:
       - FLASK_APP=manage.py
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
     command: ./run.sh
     depends_on:
       db:
-        condition: service_healthy
-      elasticsearch:
         condition: service_healthy
     restart: unless-stopped
     volumes:
@@ -28,78 +26,14 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-      - bootstrap.memory_lock=true
+  frontend:
+    build:
+      context: ../tinycloud-frontend
     ports:
-      - "9200:9200"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.11.0
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - SERVER_HOST=0.0.0.0
-      - NODE_OPTIONS="--max-old-space-size=256"
-    ports:
-      - "5601:5601"
+      - "80:80"
     depends_on:
-      elasticsearch:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
-
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:8.11.0
-    user: "root"
-    volumes:
-      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-      - ./logs:/var/log/tinycloud:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-      app:
-        condition: service_started
-    deploy:
-      resources:
-        limits:
-          memory: 128M
-        reservations:
-          memory: 64M
+      - app
+    restart: unless-stopped
   db:
     image: postgres:14.18
     ports:
@@ -126,7 +60,4 @@ services:
           memory: 256M
 
 volumes:
-  elasticsearch_data:
   postgres_data:
-  grafana_data:
-
