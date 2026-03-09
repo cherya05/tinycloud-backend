@@ -1,0 +1,88 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+api/tinycloud/__pycache__/
+api/tinycloud/data/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite3 
+
+# Charts
+charts/tinycloud/charts/postgresql/
+charts/tinycloud/charts/postgresql-16.7.24.tgz
+charts/tinycloud/Chart.lock
+charts/tinycloud/*.json
+
+.cursorrules
+.helmignore
+
+# Terraform
+**/.terraform/*
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+terraform.tfstate
+terraform/
+terraform/network/.terraform.lock.hcl
+terraform/eks/.terraform.lock.hcl
+terraform/eks/.terraform/providers/registry.terraform.io/hashicorp/aws/6.10.0/darwin_amd64/LICENSE.txt
+terraform/eks/.terraform/providers/registry.terraform.io/hashicorp/aws/6.10.0/darwin_amd64/terraform-provider-aws_v6.10.0_x5
+
+.dockerignore
+
+postgresql.conf
+postgresql.auto.conf
+postmaster.opts
+**/pg_*/
+
+*.tgz
+charts/**/*.tgz
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup

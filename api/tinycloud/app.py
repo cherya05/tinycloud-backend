@@ -1,0 +1,48 @@
+import os
+from flask import Flask, jsonify
+from flask_restful import Api
+from sqlalchemy.orm import DeclarativeBase
+from flask_migrate import Migrate
+from .extensions import db
+from .routes.url_mapping import url_bp
+from flask_cors import CORS
+from .services.elasticsearch_service import ElasticsearchService
+from .services.metrics import init_metrics, metrics_bp
+
+
+def create_app():
+    app = Flask(__name__)
+    
+    user = os.getenv('DB_USER')
+    password = os.getenv('DB_PASSWORD')
+    hostname = os.getenv('DB_HOST')
+    port = os.getenv('DB_PORT')
+    name = os.getenv('DB_NAME')
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{user}:{password}@{hostname}:{port}/{name}'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    es_service = ElasticsearchService()
+    app.config['ELASTICSEARCH_SERVICE'] = es_service
+
+    db.init_app(app)
+    app.register_blueprint(url_bp)
+    app.register_blueprint(metrics_bp)
+    CORS(app)
+    init_metrics(app)
+
+    @app.route('/')
+    def index():
+        return jsonify({}), 200
+
+    migrate = Migrate(app, db, directory=os.path.join(os.path.dirname(__file__), 'migrations'))
+    
+    api = Api(app)
+
+    return app
+
+app = create_app()
+base = DeclarativeBase()
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)

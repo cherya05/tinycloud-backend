@@ -1,0 +1,71 @@
+replicaCount: null
+
+image:
+  repository: tinycloud-app
+  pullPolicy: IfNotPresent
+  tag: "v1"
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ""
+  port: 8080
+
+ingress:
+  enabled: null
+  className: ""
+  annotations: {}
+  hosts:
+    - host: ""
+      paths:
+        - path: []
+          pathType: ""
+  tls: []
+
+resources:
+  limits:
+    cpu: null
+    memory: null
+  requests:
+    cpu: null
+    memory: null
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: null
+  periodSeconds: null
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+secretName: ""
+
+postgresql:
+  enabled: true
+  auth:
+    username: ""
+    database: ""
+    existingSecret: ""
+    secretKeys:
+      adminPasswordKey: ""
+      userPasswordKey: ""
+ 
+env:
+  FLASK_ENV: ""
+  FLASK_APP: ""
