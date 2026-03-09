@@ -16,9 +16,10 @@ def create_app():
     user = os.getenv('DB_USER')
     password = os.getenv('DB_PASSWORD')
     hostname = os.getenv('DB_HOST')
+    port = os.getenv('DB_PORT')
     name = os.getenv('DB_NAME')
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{user}:{password}@{hostname}:5432/{name}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{user}:{password}@{hostname}:{port}/{name}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     es_service = ElasticsearchService()
@@ -34,7 +35,7 @@ def create_app():
     def index():
         return jsonify({}), 200
 
-    migrate = Migrate(app, db, directory='api/tinycloud/migrations')
+    migrate = Migrate(app, db, directory=os.path.join(os.path.dirname(__file__), 'migrations'))
     
     api = Api(app)
 

@@ -26,10 +26,19 @@ def get_url(id):
 
 @url_bp.route('/', methods=['POST'])
 def create_short_code():
-    data = request.get_json()
+    data = request.get_json(silent=True)
+
+    if data is None:
+        return jsonify({'error': 'Invalid JSON data'}), 400
+    else:
+        if "long_url" not in data:
+            return jsonify({'error': 'Missing long_url field'}), 400
     
-    alphabet = string.ascii_letters + string.digits
-    short_url = ''.join(secrets.choice(alphabet) for i in range(8))
+    while True:
+        alphabet = string.ascii_letters + string.digits
+        short_url = ''.join(secrets.choice(alphabet) for i in range(8))
+        if not UrlMapping.query.filter_by(short_url=short_url).first():
+            break
     
     url_mapping = UrlMapping()
     url_mapping.long_url = data['long_url']

@@ -19,7 +19,7 @@ securityContext: {}
 
 service:
   type: ""
-  port: 8081
+  port: 8080
 
 ingress:
   enabled: null
@@ -43,14 +43,14 @@ resources:
 livenessProbe:
   httpGet:
     path: /
-    port: 8081
+    port: 8080
   initialDelaySeconds: null
   periodSeconds: null
 
 readinessProbe:
   httpGet:
     path: /
-    port: 8081
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 5
 

@@ -9,5 +9,5 @@ class UrlMapping(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     long_url: Mapped[str] = mapped_column(String, nullable=False)
-    short_url: Mapped[str] = mapped_column(String, nullable=False)
+    short_url: Mapped[str] = mapped_column(String, nullable=False, unique=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
