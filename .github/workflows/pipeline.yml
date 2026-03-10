@@ -25,12 +25,12 @@ jobs:
             - name: Build and Push Docker image
               run: |
                 docker build --no-cache -t tinycloud-backend:latest .
-                docker tag tinycloud-backend:latest ${{ steps.login-ecr.outputs.registry }}/tinycloud-app:${{ github.sha }}
-                docker push ${{ steps.login-ecr.outputs.registry }}/tinycloud-app:${{ github.sha }}
+                docker tag tinycloud-backend:latest ${{ steps.login-ecr.outputs.registry }}/tinycloud-backend:${{ github.sha }}
+                docker push ${{ steps.login-ecr.outputs.registry }}/tinycloud-backend:${{ github.sha }}
             
             - name: Build and Push Helm chart
               run: |
                 helm dependency update charts/tinycloud-backend
                 helm package charts/tinycloud-backend
-                helm push tinycloud-backend-*.tgz oci://${{ steps.login-ecr.outputs.registry }}/tinycloud-app
+                helm push tinycloud-backend-*.tgz oci://${{ steps.login-ecr.outputs.registry }}
 
