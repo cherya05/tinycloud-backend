@@ -32,4 +32,5 @@ jobs:
               run: |
                 helm dependency update charts/tinycloud-backend
                 helm package charts/tinycloud-backend
-                helm push tinycloud-backend-*.tgz oci://${{ steps.login-ecr.outputs.registry }}
+                helm push tinycloud-backend-*.tgz oci://${{ steps.login-ecr.outputs.registry }}/tinycloud-app
+
