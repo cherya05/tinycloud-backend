@@ -29,6 +29,19 @@ jobs:
                 echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
                 echo "KUBECONFIG=$(pwd)/kubeconfig.yaml" >> $GITHUB_ENV
 
+            - name: Kubernetes Namespace
+              run: |
+                kubectl create namespace tinycloud-dev --dry-run=client -o yaml | kubectl apply -f -
+
+            - name: ECR Secret for Kubernetes
+              run: |
+                kubectl create secret docker-registry ecr-registry-secret \
+                  --docker-server=${{ steps.login-ecr.outputs.registry }} \
+                  --docker-username=AWS \
+                  --docker-password=$(aws ecr get-login-password --region ${{ env.AWS_REGION }}) \
+                  -n tinycloud-dev \
+                  --dry-run=client -o yaml | kubectl apply -f -
+
             - name: Deploy to Civo
               run: |
                 helm upgrade --install tinycloud-backend \
