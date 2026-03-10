@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: cheryyaaaaaaa/tinycloud-app
+  repository: 242902229138.dkr.ecr.eu-north-1.amazonaws.com/tinycloud-backend
   pullPolicy: IfNotPresent
   tag: "latest"
 
