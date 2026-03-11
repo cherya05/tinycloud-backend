@@ -78,6 +78,7 @@ postgresql:
 env:
   FLASK_ENV: production
   FLASK_APP: manage.py
+  DB_PORT: "5432"
   ELASTICSEARCH_HOST: "elasticsearch-master"
   ELASTICSEARCH_PORT: "9200"
 
