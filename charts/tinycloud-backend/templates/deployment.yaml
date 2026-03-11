@@ -65,7 +65,7 @@ spec:
             - name: DB_HOST
               value: {{ .Release.Name }}-postgresql
             - name: DB_PORT
-              value: {{ .Values.env.DB_PORT }}
+              value: {{ .Values.env.DB_PORT | quote }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
