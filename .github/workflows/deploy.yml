@@ -44,6 +44,7 @@ jobs:
 
             - name: Deploy to Civo
               run: |
+                helm uninstall tinycloud-backend -n tinycloud-dev 2>/dev/null || true
                 helm upgrade --install tinycloud-backend \
                   oci://${{ steps.login-ecr.outputs.registry }}/tinycloud-backend \
                   --set image.tag=${{ github.event.workflow_run.head_sha }} \
