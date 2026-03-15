@@ -3,7 +3,7 @@ replicaCount: null
 image:
   repository: tinycloud-app
   pullPolicy: IfNotPresent
-  tag: "v1"
+  tag: ""
 
 imagePullSecrets: []
 
