@@ -1,98 +1,105 @@
 # TinyCloud - URL Shortener
 
-A Flask-based URL shortener service with PostgreSQL database, Docker containerization, and Kubernetes deployment support.
+Flask REST API for URL shortening. Backed by PostgreSQL, containerized with Docker, deployed to Kubernetes via Helm.
 
-## Features
+---
 
-- URL shortening with custom slugs
-- RESTful API endpoints
-- PostgreSQL database integration
-- Docker containerization
-- Kubernetes/Helm deployment
-- Database migrations with Alembic
+## Getting Started
 
-## Quick Start
-
-### Using Docker Compose
-
-1. Set up environment variables by copying the example file:
 ```bash
-cp env.example .env
+cp .env.example .env
+# fill in DB_USER, DB_PASSWORD, DB_NAME, DB_HOST, DB_PORT
 ```
 
-2. Edit the `.env` file with your desired values:
-```bash
-# Database Configuration
-POSTGRES_USER=tinycloud
-POSTGRES_PASSWORD=your_secure_password_here
-POSTGRES_DB=tinycloud
+### Run with Docker Compose
 
-# Application Configuration
-FLASK_ENV=development
+```bash
+docker compose up --build
 ```
 
-3. Run the application:
+| Service  | URL                   |
+|----------|-----------------------|
+| Frontend | http://localhost      |
+| API      | http://localhost:8080 |
+| Postgres | localhost:5432        |
+
+> Requires [tinycloud-frontend](../tinycloud-frontend) in the parent directory.
+
+---
+
+## Database Migrations
+
+Migrations run automatically on startup. To manage them manually:
+
 ```bash
-docker-compose up --build
+docker exec -it <container> flask db migrate -m "description"
+docker exec -it <container> flask db upgrade
 ```
 
-The application will be available at `http://localhost:8000`
+---
 
-### API Endpoints
+## API
 
-- `GET /` - Health check
-- `GET /url-mapping/` - List all URL mappings
-- `GET /url-mapping/<id>` - Get specific URL mapping
-- `POST /url-mapping/` - Create new URL mapping
-- `PUT /url-mapping/<id>` - Update URL mapping
-- `DELETE /url-mapping/<id>` - Delete URL mapping
+| Method | Endpoint                   | Description          |
+|--------|----------------------------|----------------------|
+| GET    | `/`                        | Health check         |
+| GET    | `/url-mapping/`            | List all mappings    |
+| POST   | `/url-mapping/`            | Create short URL     |
+| GET    | `/url-mapping/<short_url>` | Redirect to long URL |
+| PUT    | `/url-mapping/<id>`        | Update mapping       |
+| DELETE | `/url-mapping/<id>`        | Delete mapping       |
+| GET    | `/metrics`                 | Prometheus metrics   |
 
-## Development
+**Create a short URL:**
 
-### Prerequisites
-
-- Python 3.13+
-- PostgreSQL
-- Docker (optional)
-
-### Local Development
-
-1. Install dependencies:
 ```bash
-cd api/tinycloud
-pip install -r requirements.txt
+curl -X POST http://localhost:8080/url-mapping/ \
+  -H "Content-Type: application/json" \
+  -d '{"long_url": "https://example.com"}'
 ```
 
-2. Set up environment variables:
+---
+
+## Build & Push
+
 ```bash
-cp ../env.example ../.env
-# Edit the .env file with your database credentials
+# Build image
+docker build --no-cache -t tinycloud-backend:latest .
+
+# Tag and push to ECR
+docker tag tinycloud-backend:latest <registry>/tinycloud-docker-backend:<version>
+docker push <registry>/tinycloud-docker-backend:<version>
+
+# Package and push Helm chart
+helm dependency update charts/tinycloud-backend
+helm package charts/tinycloud-backend --version <version>
+helm push tinycloud-backend-*.tgz oci://<registry>
 ```
 
-3. Run the application:
-```bash
-export DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}
-python app.py
-```
+---
 
 ## Deployment
 
-### Kubernetes/Helm
+Deployed via [helmfile](https://helmfile.readthedocs.io/) from the [tinycloud-infra](https://github.com/cherya05/tinycloud-infra) repo.
 
 ```bash
-helm install tinycloud charts/tinycloud/
+helmfile --environment dev \
+  -l name=tinycloud-backend-dev \
+  --state-values-set version=<version> \
+  sync --wait
 ```
 
-## Project Structure
+Environments: `dev` · `staging` · `prod`
 
-```
-tinycloud-project/
-├── api/tinycloud/          # Flask application
-│   ├── models/            # SQLAlchemy models
-│   ├── routes/            # API routes
-│   ├── schemas/           # Marshmallow schemas
-│   ├── extensions/        # Flask extensions
-│   └── migrations/        # Database migrations
-├── charts/tinycloud/      # Helm chart
-└── docker-compose.yml     # Local development
-```
+Values per environment: `charts/tinycloud-backend/values-{env}.yaml`
+
+---
+
+## CI/CD
+
+Pushing to `main` triggers the pipeline automatically:
+
+1. Bumps semver tag
+2. Builds and pushes Docker image to ECR
+3. Packages and pushes Helm chart to ECR
+4. Triggers deployment to `dev` via `tinycloud-infra` pipeline
