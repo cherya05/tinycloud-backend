@@ -5,25 +5,19 @@ from sqlalchemy.orm import DeclarativeBase
 from flask_migrate import Migrate
 from .extensions import db
 from .routes.url_mapping import url_bp
+from .config import Config
 from flask_cors import CORS
 from .services.elasticsearch_service import ElasticsearchService
 from .services.metrics import init_metrics, metrics_bp
 
 
-def create_app():
+def create_app(config=Config):
     app = Flask(__name__)
-    
-    user = os.getenv('DB_USER')
-    password = os.getenv('DB_PASSWORD')
-    hostname = os.getenv('DB_HOST')
-    port = os.getenv('DB_PORT')
-    name = os.getenv('DB_NAME')
+    app.config.from_object(config)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{user}:{password}@{hostname}:{port}/{name}'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    es_service = ElasticsearchService()
-    app.config['ELASTICSEARCH_SERVICE'] = es_service
+    if not app.config["TESTING"]:
+        es_service = ElasticsearchService()
+        app.config["ELASTICSEARCH_SERVICE"] = es_service
 
     db.init_app(app)
     app.register_blueprint(url_bp)
@@ -41,8 +35,8 @@ def create_app():
 
     return app
 
-app = create_app()
 base = DeclarativeBase()
 
 if __name__ == '__main__':
+    app = create_app()
     app.run(host='0.0.0.0', port=8080, debug=True)

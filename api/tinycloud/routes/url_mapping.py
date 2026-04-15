@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from sqlalchemy.exc import IntegrityError
 from flask import redirect
 from ..models.url_mapping import UrlMapping
 from ..schemas.url_mapping import UrlSchema
@@ -6,6 +7,7 @@ from ..extensions import db
 import secrets
 import string
 from datetime import datetime
+
 
 url_bp = Blueprint('url', __name__, url_prefix='/url-mapping')
 
@@ -24,6 +26,12 @@ def get_url(id):
     else:
         return jsonify({'error': 'URL not found'}), 404
 
+def generate_short_code():
+
+    alphabet = string.ascii_letters + string.digits
+    short_url = ''.join(secrets.choice(alphabet) for i in range(8))
+    return short_url
+
 @url_bp.route('/', methods=['POST'])
 def create_short_code():
     data = request.get_json(silent=True)
@@ -33,27 +41,34 @@ def create_short_code():
     else:
         if "long_url" not in data:
             return jsonify({'error': 'Missing long_url field'}), 400
-    
-    while True:
-        alphabet = string.ascii_letters + string.digits
-        short_url = ''.join(secrets.choice(alphabet) for i in range(8))
-        if not UrlMapping.query.filter_by(short_url=short_url).first():
-            break
-    
-    url_mapping = UrlMapping()
-    url_mapping.long_url = data['long_url']
-    url_mapping.short_url = short_url
-    url_mapping.created_at = datetime.now()
-    
-    db.session.add(url_mapping)
-    db.session.commit()
-    
-    schema = UrlSchema()
-    return jsonify(schema.dump(url_mapping)), 201
+
+    while True:   
+        try:
+            short_url = generate_short_code()
+            url_mapping = UrlMapping()
+            url_mapping.long_url = data['long_url']
+            url_mapping.short_url = short_url
+            url_mapping.created_at = datetime.now()
+            db.session.add(url_mapping)
+            db.session.commit()
+            schema = UrlSchema()
+            return jsonify(schema.dump(url_mapping)), 201
+        except IntegrityError as e:
+            db.session.rollback()
+            if "short_url" in str(e):
+                continue
+            else:
+                raise
 
 @url_bp.route('/<id>', methods=['PUT'])
 def update_url(id):
-    data = request.get_json()
+    data = request.get_json(silent=True)
+
+    if data is None:
+        return jsonify({'error': 'Invalid JSON data'}), 400
+    else:
+        if "long_url" not in data:
+            return jsonify({'error': 'Missing long_url field'}), 400
 
     url_mapping = UrlMapping.query.filter_by(id=id).first()
 
